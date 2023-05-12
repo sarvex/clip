@@ -9,20 +9,20 @@ from build_layout import *
 from pathlib import Path
 
 def build_example(file_path, url):
-  print("> Building page: /examples/%s" % url)
+  print(f"> Building page: /examples/{url}")
 
   tpl = Path("example.tpl.html").read_text()
-  path = "/examples/" + url
+  path = f"/examples/{url}"
   env = {
-    "example_url": url,
-    "example_src": Path(file_path).read_text(),
-    "example_file": url + ".clp",
-    "title": "Example: %s" % url,
+      "example_url": url,
+      "example_src": Path(file_path).read_text(),
+      "example_file": f"{url}.clp",
+      "title": f"Example: {url}",
   }
 
   html = TPL.render(tpl, env)
   write_page(path, html, title=env["title"])
-  copy_file(path + ".svg", re.sub("\.clp$", ".svg", file_path))
+  copy_file(f"{path}.svg", re.sub("\.clp$", ".svg", file_path))
 
 def build_example_list(examples):
   tpl = """
@@ -70,7 +70,7 @@ def main():
       e.setdefault("title", e["file"])
       e["desc"] = markdown.markdown(e.get("desc", ""))
 
-  for f in glob.glob(examples_path + "/**/*.clp"):
+  for f in glob.glob(f"{examples_path}/**/*.clp"):
     build_example(f, re.sub("\.clp$", "", f[(len(examples_path) + 1):]))
 
   build_example_list(examples)

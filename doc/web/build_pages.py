@@ -16,8 +16,7 @@ def build_page_cmdref(page):
     if "include" in arg:
       include_path = os.path.join(os.path.dirname(page["file"]), arg["include"] + ".yaml")
       include = yaml.load(open(include_path))
-      for arg in include["arguments"]:
-        args.append(arg)
+      args.extend(iter(include["arguments"]))
     else:
       args.append(arg)
 
@@ -58,7 +57,7 @@ def build_page(page):
   title = page.get("title", None)
   html = None
 
-  print("> Building page: %s" % url)
+  print(f"> Building page: {url}")
 
   if "file" in page:
     html = build_page_md(page)
@@ -68,8 +67,7 @@ def build_page(page):
 
   htmlp = HTMLP(html)
   if not title:
-    h1 = htmlp.find("h1")
-    if h1:
+    if h1 := htmlp.find("h1"):
       title = h1.text
 
   if not title:
@@ -87,10 +85,11 @@ def main():
     page.setdefault("url", "/" + f.replace(".yaml", ""))
     pages.append(page)
 
-  for f in glob.glob("**/*.md") + glob.glob("*.md"):
-    if not os.path.exists(f.replace(".md", ".yaml")):
-      pages.append({"file": f, "url": "/" + f.replace(".md", "")})
-
+  pages.extend({
+      "file": f,
+      "url": "/" + f.replace(".md", "")
+  } for f in glob.glob("**/*.md") + glob.glob("*.md")
+               if not os.path.exists(f.replace(".md", ".yaml")))
   for page in pages:
     build_page(page)
 

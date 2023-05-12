@@ -74,7 +74,7 @@ def build_layout(url, content, title="", article_class=""):
   })
 
 def write_page(url, content, **opts):
-  write_file(url + "/index.html", build_layout(url, content, **opts))
+  write_file(f"{url}/index.html", build_layout(url, content, **opts))
 
 def write_file(path, content):
   output_path = os.environ["output_dir"] + path
